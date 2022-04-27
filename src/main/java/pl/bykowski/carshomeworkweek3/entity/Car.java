@@ -1,6 +1,8 @@
 package pl.bykowski.carshomeworkweek3.entity;
 
-public class Car {
+import org.springframework.hateoas.RepresentationModel;
+
+public class Car extends RepresentationModel<Car> {
 
     private long id;
 

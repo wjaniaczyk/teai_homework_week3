@@ -1,5 +1,7 @@
 package pl.bykowski.carshomeworkweek3.controller;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,9 @@ import pl.bykowski.carshomeworkweek3.service.CarService;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/cars")
@@ -24,9 +29,12 @@ public class CarController {
     @GetMapping(produces = {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<Car>> getAll(@RequestParam(required = false) String color){
+    public ResponseEntity<CollectionModel<Car>> getAll(@RequestParam(required = false) String color){
         List<Car> all = carService.getAll(color);
-        return new ResponseEntity<>(all, HttpStatus.OK);
+        all.forEach(car -> car.add(linkTo(CarController.class).slash(car.getId()).withSelfRel()));
+        Link link = linkTo(methodOn(CarController.class).getAll(color)).withSelfRel();
+        CollectionModel<Car> result = CollectionModel.of(all, link);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}", produces = {
@@ -34,6 +42,7 @@ public class CarController {
             MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Car> getById(@PathVariable long id){
         Car byId = carService.getById(id);
+        byId.add(linkTo(CarController.class).slash(byId.getId()).withSelfRel());
         return new ResponseEntity<>(byId, HttpStatus.OK);
     }
 
