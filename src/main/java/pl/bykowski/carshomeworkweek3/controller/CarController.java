@@ -1,6 +1,7 @@
 package pl.bykowski.carshomeworkweek3.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.bykowski.carshomeworkweek3.entity.Car;
@@ -20,13 +21,17 @@ public class CarController {
         this.carService = carService;
     }
 
-    @GetMapping
+    @GetMapping(produces = {
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Car>> getAll(@RequestParam(required = false) String color){
         List<Car> all = carService.getAll(color);
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(path = "/{id}", produces = {
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Car> getById(@PathVariable long id){
         Car byId = carService.getById(id);
         return new ResponseEntity<>(byId, HttpStatus.OK);
@@ -60,11 +65,14 @@ public class CarController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(path = "/{id}", produces = {
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Car> deleteById(@PathVariable long id){
+        Car byId = carService.getById(id);
         boolean deleted = carService.deleteCar(id);
         if(deleted){
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(byId, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
