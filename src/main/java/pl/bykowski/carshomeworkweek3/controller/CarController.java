@@ -10,6 +10,7 @@ import pl.bykowski.carshomeworkweek3.entity.Car;
 import pl.bykowski.carshomeworkweek3.entity.CarRequestDTO;
 import pl.bykowski.carshomeworkweek3.service.CarService;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class CarController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addCar(@RequestBody CarRequestDTO car){
+    public ResponseEntity<?> addCar(@Valid @RequestBody CarRequestDTO car){
         boolean added = carService.addCar(car);
         if(added){
             return new ResponseEntity<>(HttpStatus.CREATED);
