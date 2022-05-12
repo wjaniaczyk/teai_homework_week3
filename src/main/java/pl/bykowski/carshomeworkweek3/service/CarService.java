@@ -1,8 +1,6 @@
 package pl.bykowski.carshomeworkweek3.service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import pl.bykowski.carshomeworkweek3.entity.Car;
 import pl.bykowski.carshomeworkweek3.entity.CarRequestDTO;
 import pl.bykowski.carshomeworkweek3.entity.Color;
@@ -20,18 +18,20 @@ public class CarService {
 
     private ICarRepo carRepo;
 
-    public CarService(@Qualifier("carRepoListImpl") ICarRepo carRepo) {
+    public CarService(ICarRepo carRepo) {
         this.carRepo = carRepo;
     }
 
-    public List<Car> getAll(@RequestParam(required = false) String color) {
-        List<Car> cars;
-        if (color != null) {
-            cars = carRepo.findByColor(color);
-        } else {
-            cars = carRepo.findAll();
-        }
-        return cars.stream().sorted(Comparator.comparing(Car::getId)).collect(Collectors.toList());
+    public List<Car> getAll() {
+       return carRepo.findAll().stream()
+               .sorted(Comparator.comparing(Car::getId))
+               .collect(Collectors.toList());
+    }
+
+    public List<Car> getAllByColor(String color) {
+        return carRepo.findByColor(color).stream()
+                .sorted(Comparator.comparing(Car::getId))
+                .collect(Collectors.toList());
     }
 
     public Car getById(long id) {

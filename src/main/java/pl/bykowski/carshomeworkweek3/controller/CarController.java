@@ -31,7 +31,12 @@ public class CarController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<CollectionModel<Car>> getAll(@RequestParam(required = false) String color){
-        List<Car> all = carService.getAll(color);
+        List<Car> all;
+        if(color != null){
+            all = carService.getAllByColor(color);
+        } else {
+            all = carService.getAll();
+        }
         all.forEach(car -> car.add(linkTo(CarController.class).slash(car.getId()).withSelfRel()));
         Link link = linkTo(methodOn(CarController.class).getAll(color)).withSelfRel();
         CollectionModel<Car> result = CollectionModel.of(all, link);
@@ -48,7 +53,7 @@ public class CarController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addCar(@Valid @RequestBody CarRequestDTO car){
+    public ResponseEntity<CarRequestDTO> addCar(@Valid @RequestBody CarRequestDTO car){
         boolean added = carService.addCar(car);
         if(added){
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -58,7 +63,7 @@ public class CarController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCar(@PathVariable long id,
+    public ResponseEntity<CarRequestDTO> updateCar(@PathVariable long id,
                                        @RequestBody CarRequestDTO car){
         boolean updated = carService.updateCar(id, car);
         if(updated){
@@ -69,7 +74,7 @@ public class CarController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updatePartCar(@PathVariable long id,
+    public ResponseEntity<CarRequestDTO> updatePartCar(@PathVariable long id,
                                            @RequestBody Map<String, Object> updates){
         carService.updatePartCar(id, updates);
         return new ResponseEntity<>(HttpStatus.OK);
